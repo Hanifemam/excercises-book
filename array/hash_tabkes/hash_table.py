@@ -1,7 +1,7 @@
 class HashTable:
     def __init__(self, size):
         self.size = size
-        self.hash_table = [[] for _ in range(size)]
+        self.hash_table = tuple([] for _ in range(size))
 
     def _hash(self, key):
         hash = 0
