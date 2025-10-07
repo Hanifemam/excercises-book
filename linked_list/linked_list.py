@@ -17,7 +17,7 @@ class LinkedList:
 
 class Node:
     def __init__(self, value, next):
-        self.value = value
+        self._value = value
         self._next = next
 
     @property
@@ -27,3 +27,11 @@ class Node:
     @next.setter
     def next(self, next):
         self._next = next
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        self._value = value
