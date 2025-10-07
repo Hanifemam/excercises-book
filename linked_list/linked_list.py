@@ -5,7 +5,7 @@ class LinkedList:
         self.tail = node
 
     def append(self, value):
-        node = Node(value, next)
+        node = Node(value, None)
         self.tail.next = node
         self.tail = node
 
