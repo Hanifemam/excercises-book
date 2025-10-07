@@ -10,24 +10,26 @@ class LinkedList:
         self.tail = node
 
     def prepend(self, value):
-        next_node = self.head
-        node = Node(value, next_node)
+        node = Node(value, self.head)
         self.head = node
 
-    def insert(self, index, value):
-        pass
+    def insert(self, after_value, new_value):
+        current = self.head
+        while current:
+            if current.value == after_value:
+                node = Node(new_value, current.next)
+                current.next = node
+                if self.tail is current:
+                    self.tail = node
+                return
+            current = current.next
+        raise ValueError(f"{after_value} not found")
 
     def __iter__(self):
-        self._cursor = self.head
-        return self
-
-    def __next__(self):
-        if self._cursor:
-            value = self._cursor.value
-            self._cursor = self._cursor.next
-            return value
-        else:
-            raise StopIteration
+        current = self.head
+        while current:
+            yield current.value
+            current = current.next
 
 
 class Node:
@@ -52,6 +54,7 @@ class Node:
         self._value = value
 
 
+# --- TEST SCRIPT ---
 if __name__ == "__main__":
     print("Creating linked list with head = 10...")
     ll = LinkedList(10)
@@ -60,21 +63,26 @@ if __name__ == "__main__":
     ll.append(20)
     ll.append(30)
 
-    print("Prepending value 5...")
+    print("\nPrepending value 5...")
     ll.prepend(5)
 
-    print("\nIterating through the linked list:")
+    print("\nInitial list:")
     for value in ll:
-        print(value)
+        print(value, end=" -> ")
+    print("None")
 
-    print("\nIterating again (should still work):")
+    print("\nInserting 15 after 10...")
+    ll.insert(10, 15)
+
+    print("Inserting 25 after 20...")
+    ll.insert(20, 25)
+
+    print("Inserting 35 after 30 (at tail)...")
+    ll.insert(30, 35)
+
+    print("\nList after insertions:")
     for value in ll:
-        print(value)
+        print(value, end=" -> ")
+    print("None")
 
-    print("\nManual iteration using next():")
-    iterator = iter(ll)
-    try:
-        while True:
-            print(next(iterator))
-    except StopIteration:
-        print("Reached end of list.")
+    print(f"\nHead: {ll.head.value}, Tail: {ll.tail.value}")
