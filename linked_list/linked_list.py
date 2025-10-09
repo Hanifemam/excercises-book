@@ -62,6 +62,43 @@ class LinkedList:
             runner = runner.next
         self.len += 1
 
+    def index_based_remove(self, ind):
+        if ind < 0 or ind >= self.len:
+            raise ValueError(f"index {ind} out of range [0, {self.len - 1}]")
+
+        prev, curr = self.traverse_to_remove(ind)
+        if curr is None:
+            raise ValueError(f"index {ind} not found")
+
+        if prev is None:
+            self.head = curr.next
+        else:
+            prev.next = curr.next
+
+        if curr.next is None:
+            self.tail = prev
+
+        runner = curr.next
+        while runner:
+            runner.ind -= 1
+            runner = runner.next
+
+        self.len -= 1
+        if self.len == 0:
+            self.head = None
+            self.tail = None
+
+    def traverse_to_remove(self, ind):
+        if ind < 0 or ind >= self.len:
+            return None, None
+
+        prev = None
+        curr = self.head
+        while curr and curr.ind != ind:
+            prev = curr
+            curr = curr.next
+        return prev, curr
+
     def traverse(self, ind):
         current_node = self.head
         current_ind = current_node.ind
@@ -141,6 +178,45 @@ def validate_indices(ll):
     assert count == ll.len, f"Length mismatch: counted {count}, ll.len={ll.len}"
 
 
+# --- TEST SCRIPT ---
+def print_list_with_indices(ll, title="List"):
+    print(f"\n{title}:")
+    node = ll.head
+    out = []
+    while node:
+        out.append(f"({node.value},{node.ind})")
+        node = node.next
+    print(" -> ".join(out) + " -> None")
+    if ll.len > 0:
+        print(f"len={ll.len}, head={ll.head.value}, tail={ll.tail.value}")
+    else:
+        print(f"len={ll.len}, head=None, tail=None")
+
+
+def validate_indices(ll):
+    # ensure indices are 0..len-1 and in order
+    node = ll.head
+    expected = 0
+    count = 0
+    while node:
+        assert (
+            node.ind == expected
+        ), f"Index mismatch at value {node.value}: {node.ind} != {expected}"
+        expected += 1
+        count += 1
+        node = node.next
+    assert count == ll.len, f"Length mismatch: counted {count}, ll.len={ll.len}"
+    if ll.len == 0:
+        assert (
+            ll.head is None and ll.tail is None
+        ), "Empty list must have head=tail=None"
+    else:
+        assert ll.head.ind == 0, "Head index should be 0"
+        assert (
+            ll.tail.ind == ll.len - 1
+        ), f"Tail index {ll.tail.ind} != len-1 {ll.len - 1}"
+
+
 if __name__ == "__main__":
     print("Creating linked list with head = 10...")
     ll = LinkedList(10)
@@ -152,50 +228,62 @@ if __name__ == "__main__":
     print("\nPrepending value 5...")
     ll.prepend(5)
 
-    print_list_with_indices(ll, "Initial list")
+    # Optional: one index-based insert to have a richer structure
+    print("\nIndex-based insert at ind=2 (insert 15 before current index 2)...")
+    ll.index_based_insert(2, 15)  # Expect: 5(0),10(1),15(2),20(3),30(4)
 
-    # ---------- index_based_insert tests ----------
-    # 1) insert at head (ind == 0) -> acts like prepend
-    print("\n[TEST] index_based_insert at ind=0 (prepend case)")
-    ll.index_based_insert(0, 1)
-    print_list_with_indices(ll, "After inserting 1 at ind=0")
+    print_list_with_indices(ll, "Initial state before removals")
     validate_indices(ll)
 
-    # 2) insert in the middle (e.g., ind=3)
-    print("\n[TEST] index_based_insert at ind=3 (middle insert)")
-    ll.index_based_insert(3, 12)
-    print_list_with_indices(ll, "After inserting 12 at ind=3")
+    # --------- REMOVALS TESTS ---------
+
+    # 1) Remove head (ind=0)
+    print("\n[TEST] Remove head (ind=0)")
+    ll.index_based_remove(0)
+    print_list_with_indices(ll, "After removing head")
+    validate_indices(ll)
+    assert (
+        ll.head is not None and ll.head.ind == 0
+    ), "Head should exist and have ind=0 after head removal"
+
+    # 2) Remove middle element (choose a valid middle index)
+    mid_index = ll.len // 2
+    print(f"\n[TEST] Remove middle (ind={mid_index})")
+    ll.index_based_remove(mid_index)
+    print_list_with_indices(ll, f"After removing index {mid_index}")
     validate_indices(ll)
 
-    # 3) insert before current tail (ind == tail.ind) — should insert BEFORE tail, not append
-    print("\n[TEST] index_based_insert at ind=tail.ind (before tail)")
-    tail_index_before = ll.tail.ind
-    ll.index_based_insert(tail_index_before, 99)
-    print_list_with_indices(
-        ll, f"After inserting 99 at ind={tail_index_before} (before tail)"
-    )
+    # 3) Remove tail (ind=len-1)
+    tail_index = ll.len - 1
+    print(f"\n[TEST] Remove tail (ind={tail_index})")
+    old_tail_value = ll.tail.value
+    ll.index_based_remove(tail_index)
+    print_list_with_indices(ll, "After removing tail")
     validate_indices(ll)
+    if ll.len > 0:
+        assert (
+            ll.tail.value != old_tail_value
+        ), "Tail should have changed after removing old tail"
 
-    # 4) append at end (ind == len)
-    print("\n[TEST] index_based_insert at ind=len (append case)")
-    end_index = ll.len
-    ll.index_based_insert(end_index, 100)
-    print_list_with_indices(ll, f"After inserting 100 at ind={end_index} (append)")
-    validate_indices(ll)
-
-    # 5) out-of-range (ind == len + 1) -> should raise
-    print("\n[TEST] index_based_insert out-of-range (should raise)")
+    # 4) Out-of-range removals
+    print("\n[TEST] Remove with out-of-range indices (should raise)")
     try:
-        ll.index_based_insert(ll.len + 1, 12345)
+        ll.index_based_remove(-1)
     except ValueError as e:
-        print(f"Raised as expected: {e}")
+        print("Raised as expected for -1:", e)
+    try:
+        ll.index_based_remove(ll.len)  # equal to len is invalid (valid range: 0..len-1)
+    except ValueError as e:
+        print(f"Raised as expected for ind==len ({ll.len}):", e)
 
-    # Final validations
-    print("\nFinal validations...")
-    validate_indices(ll)
-    # quick sanity checks on head/tail
-    assert ll.head.ind == 0, "Head index should be 0"
-    # Ensure tail.ind == len-1
-    assert ll.tail.ind == ll.len - 1, f"Tail index {ll.tail.ind} != len-1 {ll.len - 1}"
+    # 5) Remove everything until empty (always remove head for simplicity)
+    print("\n[TEST] Remove everything until empty")
+    while ll.len > 0:
+        ll.index_based_remove(0)
+        validate_indices(ll)
+    print_list_with_indices(ll, "After removing all elements (should be empty)")
+    assert (
+        ll.head is None and ll.tail is None and ll.len == 0
+    ), "List should be empty with head=tail=None"
 
-    print("\nAll index_based_insert tests passed ✅")
+    print("\nAll remove tests passed ✅")
