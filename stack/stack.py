@@ -11,8 +11,8 @@ class Stack:
             self.top = node
         else:
             node = Node(val, next=self.top)
-            self.length += 1
             self.top = node
+        self.length += 1
 
     def pop(self):
         if self.length == 0:
@@ -28,6 +28,9 @@ class Stack:
             self.top = self.top.next
             self.length -= 1
             return val
+
+    def peek(self):
+        return self.top
 
     def __repr__(self):
         curr = self.top
