@@ -48,6 +48,58 @@ class BinarySearchTree:
         print(f"{val} not found")
         return (None, parent, side)
 
+    def remove(self, val):
+        remove_node, parent, side = self.lookup(val)
+        if not remove_node:
+            print(f"{val} does not exists.")
+            return
+        if parent is None and remove_node.right is None and remove_node.left is None:
+            self.root = None
+        else:
+            if remove_node.right is None and remove_node.left is None:
+                if side == "left":
+                    parent.left = None
+                else:
+                    parent.right = None
+                return
+            if remove_node.right:
+                next_sub_root = remove_node.right
+                next_sub_root_parent = remove_node
+                while next_sub_root.left:
+                    next_sub_root_parent = next_sub_root
+                    next_sub_root = next_sub_root.left
+
+                next_sub_root_parent.left = None
+                if not parent:
+                    self.root = next_sub_root
+                else:
+                    if side == "left":
+                        parent.left = next_sub_root
+                    else:
+                        parent.right = next_sub_root
+                next_sub_root.left = remove_node.left
+                next_sub_root.right = remove_node.right
+                return self
+            else:
+                next_sub_root = remove_node.left
+                next_sub_root_parent = remove_node
+                while next_sub_root.right:
+                    next_sub_root_parent = next_sub_root
+                    next_sub_root = next_sub_root.right
+
+                next_sub_root_parent.right = None
+                if not parent:
+                    self.root = next_sub_root
+                else:
+                    if side == "left":
+                        parent.left = next_sub_root
+                    else:
+                        parent.right = next_sub_root
+                    parent.right = next_sub_root
+                next_sub_root.left = remove_node.left
+                next_sub_root.right = remove_node.right
+                return self
+
 
 # ---- test_bst.py ----
 
@@ -81,3 +133,26 @@ if __name__ == "__main__":
     print("\nIn-order traversal (should be sorted):")
     inorder(bst.root)
     print()
+    bst = BinarySearchTree()
+    for v in [10, 5, 15, 3, 7, 12, 18, 1, 4, 6, 8, 11, 13, 17, 20]:
+        bst.insert(v)
+
+    # remove leaf
+    bst.remove(1)
+    # remove node with one child
+    bst.remove(12)
+    # remove node with two children
+    bst.remove(5)
+    # remove root with two children
+    bst.remove(10)
+
+    # verify BST property by inorder traversal -> sorted unique values minus removed ones
+    def inorder(n, out):
+        if n:
+            inorder(n.left, out)
+            out.append(n.val)
+            inorder(n.right, out)
+
+    vals = []
+    inorder(bst.root, vals)
+    print(vals)
