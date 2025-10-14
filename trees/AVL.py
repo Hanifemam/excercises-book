@@ -90,3 +90,31 @@ class AVL:
 
     def insert_key(self, key):
         self.root = self.insert(self.root, key)
+
+
+if __name__ == "__main__":
+    tree = AVL()
+    root = None
+
+    # Test sequences for different rotation cases
+    tests = {
+        "LL rotation": [30, 20, 10],
+        "RR rotation": [10, 20, 30],
+        "LR rotation": [30, 10, 20],
+        "RL rotation": [10, 30, 20],
+        "Mixed insertions": [50, 20, 70, 10, 30, 60, 80, 25, 27, 26],
+    }
+
+    def inorder(node):
+        return inorder(node.left) + [node.key] + inorder(node.right) if node else []
+
+    for name, seq in tests.items():
+        tree = AVL()
+        root = None
+        for key in seq:
+            root = tree.insert(root, key)
+        print(f"\n{name}:")
+        print("Inserted:", seq)
+        print("Inorder traversal:", inorder(root))
+        print("Root key:", root.key)
+        print("Height:", root.height)
