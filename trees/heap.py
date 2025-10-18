@@ -27,6 +27,19 @@ def add_to_heap(arr, value):
     return arr
 
 
+def remove_from_heap(arr):
+    n = len(arr)
+    if n == 0:
+        return None
+    if n == 1:
+        return arr.pop()
+    root = arr[0]
+    last = arr.pop()
+    arr[0] = last
+    heapify(arr, 0, len(arr))
+    return root
+
+
 def built_heap(arr, n):
     start_ind = (n // 2) - 1
 
@@ -60,5 +73,7 @@ if __name__ == "__main__":
 
     built_heap(arr, n)
     printHeap(arr)
-    arr = add_to_heap(arr, 4)
+    add_to_heap(arr, 4)
+    print(is_max_heap(arr))
+    remove_from_heap(arr)
     print(is_max_heap(arr))
