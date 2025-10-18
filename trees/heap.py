@@ -27,12 +27,6 @@ def add_to_heap(arr, value):
     return arr
 
 
-def remove_from_heap(arr):
-    root = arr[0]
-    last = arr.pop()
-    heapify(arr, 0, len(arr))
-
-
 def built_heap(arr, n):
     start_ind = (n // 2) - 1
 
