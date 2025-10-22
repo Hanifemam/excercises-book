@@ -29,8 +29,8 @@ def sort_with_quick(arr):
     return arr
 
 
-print(sort_with_quick([3, 1, 4, 1, 5, 9]))  # -> [1, 1, 3, 4, 5, 9]
-print(sort_with_quick([10, 9, 8, 7, 6, 5]))  # -> [5, 6, 7, 8, 9, 10]
-print(sort_with_quick([5, 5, 5, 5]))  # -> [5, 5, 5, 5]
-print(sort_with_quick([42]))  # -> [42]
-print(sort_with_quick([]))  # -> []
+print(sort_with_quick([3, 1, 4, 1, 5, 9]))
+print(sort_with_quick([10, 9, 8, 7, 6, 5]))
+print(sort_with_quick([5, 5, 5, 5]))
+print(sort_with_quick([42]))
+print(sort_with_quick([]))
