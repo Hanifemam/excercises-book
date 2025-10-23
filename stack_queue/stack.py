@@ -45,10 +45,10 @@ class Node:
         self.next = next
 
 
-stack = Stack()
-stack.push(1)
-stack.push(2)
-stack.push(3)
+# stack = Stack()
+# stack.push(1)
+# stack.push(2)
+# stack.push(3)
+# # print(stack)
+# stack.pop()
 # print(stack)
-stack.pop()
-print(stack)
